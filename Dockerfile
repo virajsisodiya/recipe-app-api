@@ -13,18 +13,15 @@ ARG DEV=false
 RUN apk update && apk add git
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
-    /py/bin/pip install Django==3.2.4 && \
-    /py/bin/pip install djangorestframework==3.12.4 && \
-    /py/bin/pip install flake8==3.9.2 && \
     apk add --update --no-cache postgresql-client && \
     apk add --update --no-cache --virtual .tmp-build-deps \
-        gcc libc-dev linux-headers postgresql-dev && \
+        build-base postgresql-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ $DEV = "true" ] ; \
         then echo "--DEV BUILD--" && /py/bin/pip install -r /tmp/requirements.dev.txt ; \
     fi && \
-    apk del .tmp-build-deps && \
     rm -rf /tmp && \
+    apk del .tmp-build-deps && \    
     adduser \
         --disabled-password \
         --no-create-home \
